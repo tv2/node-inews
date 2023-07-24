@@ -172,4 +172,81 @@ describe('inewsStoryParser', () => {
 			cues: [[], [], [], ['#kg bund TEST', 'test', ';0.02'], [], ['#kg bund TEST2', 'test2', ';0.11']],
 		})
 	})
+
+	it('parses breaks', async () => {
+		const nsml = `<nsml version="-//AVID//DTD NSML 1.0//EN">
+		<head>
+		<meta rate=205 break>
+		<story>
+		</story>
+		`
+
+		const output = await parseNsml(nsml)
+		expect(output).toEqual({
+			fields: {
+				audioTime: undefined,
+				backTime: undefined,
+				cumeTime: undefined,
+				layout: undefined,
+				modifyDate: undefined,
+				pageNumber: undefined,
+				runsTime: undefined,
+				tapeTime: undefined,
+				title: undefined,
+				totalTime: undefined,
+				videoId: undefined,
+			},
+			meta: {
+				break: 'break',
+				rate: '205',
+			},
+			cues: [],
+		})
+	})
+
+	it('parses floats', async () => {
+		const nsml = `<nsml version="-//AVID//DTD NSML 1.0//EN">
+		<head>
+		<meta rate=205 float>
+		<story>
+		</story>
+		`
+
+		const output = await parseNsml(nsml)
+		expect(output).toEqual({
+			fields: {
+				audioTime: undefined,
+				backTime: undefined,
+				cumeTime: undefined,
+				layout: undefined,
+				modifyDate: undefined,
+				pageNumber: undefined,
+				runsTime: undefined,
+				tapeTime: undefined,
+				title: undefined,
+				totalTime: undefined,
+				videoId: undefined,
+			},
+			meta: {
+				float: 'float',
+				rate: '205',
+			},
+			cues: [],
+		})
+	})
+
+	it('parses unicode in scripts', async () => {
+		const nsml = `<nsml version="-//AVID//DTD NSML 1.0//EN">
+		<head>
+		<meta rate=205 float>
+		<story>
+		<body>
+		<p>æøåÆØÅ</p>
+		</body>
+		</story>
+		`
+
+		const output = await parseNsml(nsml)
+		expect(output.body).toContain('<p>æøåÆØÅ</p>')
+	})
 })
